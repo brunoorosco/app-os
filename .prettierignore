@@ -1,0 +1,12 @@
+node_modules
+build
+dist
+.expo
+.expo-shared
+coverage
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.ico
+*.ttf
