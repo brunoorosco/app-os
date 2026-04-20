@@ -3,6 +3,8 @@ import { MaterialList, PhotoPicker, SignaturePad, StatusBadge, GradientButton } 
 import { Colors, FontFamily } from '@presentation/styles';
 import { useOrderDetailViewModel } from '@presentation/viewmodels/useOrderDetailViewModel';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { openInMaps } from '@shared/utils/geoUtils';
+import { mockTechnician } from '@data/datasources/mockServiceOrders';
 import React from 'react';
 import {
   View,
@@ -106,13 +108,21 @@ export default function OrderDetailScreen() {
                 <Text style={styles.phoneText}>{order.clientPhone}</Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.addressBox}>
+            <TouchableOpacity 
+              style={styles.addressBox} 
+              onPress={() => openInMaps(
+                order.address.latitude,
+                order.address.longitude,
+                order.clientName
+              )}
+            >
               <Feather name="map-pin" size={16} color={Colors.textSecondary} />
               <Text style={styles.addressText}>
                 {order.address.street}, {order.address.number}{'\n'}
                 {order.address.neighborhood}, {order.address.city} - {order.address.state}
               </Text>
-            </View>
+              <Feather name="navigation" size={16} color={Colors.main} style={{ marginLeft: 'auto' }} />
+            </TouchableOpacity>
           </View>
         </View>
 

@@ -1,7 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import { OrderPriority, ServiceOrder } from '@domain/entities/ServiceOrder';
 import { Colors, FontFamily } from '@presentation/styles';
-import { formatDistance } from '@shared/utils/geoUtils';
+import { formatDistance, openInMaps } from '@shared/utils/geoUtils';
+import { mockTechnician } from '@data/datasources/mockServiceOrders';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { StatusBadge } from '../StatusBadge';
@@ -54,12 +55,22 @@ export function ServiceOrderCard({ order, onPress }: ServiceOrderCardProps) {
       </View>
 
       {/* Address */}
-      <View style={styles.infoRow}>
+      <TouchableOpacity 
+        style={styles.infoRow}
+        onPress={(e) => {
+          e.stopPropagation();
+          openInMaps(
+            order.address.latitude,
+            order.address.longitude,
+            order.clientName
+          );
+        }}
+      >
         <Feather name="map-pin" size={14} color={Colors.textSecondary} />
         <Text style={styles.addressText} numberOfLines={1}>
           {order.address.street}, {order.address.number} — {order.address.neighborhood}
         </Text>
-      </View>
+      </TouchableOpacity>
 
       {/* Schedule + Distance grouped */}
       <View style={styles.bottomRow}>

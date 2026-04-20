@@ -1,3 +1,33 @@
+import { Linking, Platform, ActionSheetIOS, Alert } from 'react-native';
+
+/**
+ * Opens the device's navigation app using the system default.
+ */
+export async function openInMaps(
+  destLat: number,
+  destLng: number,
+  destLabel: string,
+): Promise<void> {
+  const latLng = `${destLat},${destLng}`;
+  const label = encodeURIComponent(destLabel);
+  
+  const url = Platform.select({
+    ios: `maps:0,0?q=${label}@${latLng}`,
+    android: `geo:0,0?q=${latLng}(${label})`,
+  });
+
+  if (url) {
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      // Fallback to browser maps if app scheme fails
+      const browserUrl = `https://www.google.com/maps/search/?api=1&query=${latLng}`;
+      await Linking.openURL(browserUrl);
+    }
+  }
+}
+
 /**
  * Calculates the distance between two geographic coordinates
  * using the Haversine formula.
