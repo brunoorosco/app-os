@@ -17,6 +17,9 @@ export interface ServiceOrderRepository {
       photos: string[];
       materials: { name: string; quantity: number }[];
       signature: string;
+      technicianComment?: string;
     },
   ): Promise<void>;
+
+  updateComment(orderId: string, comment: string): Promise<void>;
 }

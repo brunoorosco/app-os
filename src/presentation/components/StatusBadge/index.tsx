@@ -15,6 +15,11 @@ const statusConfig: Record<OrderStatus, { label: string; color: string; bg: stri
     color: Colors.status.completed,
     bg: Colors.status.completedBg,
   },
+  cancelled: {
+    label: 'Cancelada',
+    color: Colors.error,
+    bg: '#FEF2F2',
+  },
 };
 
 interface StatusBadgeProps {

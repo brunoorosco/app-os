@@ -1,4 +1,4 @@
-import { Linking, Platform, ActionSheetIOS, Alert } from 'react-native';
+import { Linking, Platform } from 'react-native';
 
 /**
  * Opens the device's navigation app using the system default.

@@ -4,6 +4,7 @@ interface FinalizeData {
   photos: string[];
   materials: { name: string; quantity: number }[];
   signature: string;
+  technicianComment?: string;
 }
 
 export class FinalizeServiceOrderUseCase {

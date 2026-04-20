@@ -15,6 +15,7 @@ import {
   StyleSheet,
   Alert,
   Linking,
+  TextInput,
 } from 'react-native';
 
 export default function OrderDetailScreen() {
@@ -28,11 +29,17 @@ export default function OrderDetailScreen() {
     materials,
     signature,
     setSignature,
+    technicianComment,
+    setTechnicianComment,
     addPhoto,
     removePhoto,
     addMaterial,
     removeMaterial,
     submitFinalization,
+    submitComment,
+    cancelOrder,
+    startOrder,
+    isBlocked,
   } = useOrderDetailViewModel(id);
 
   const { signature: newSignature } = useLocalSearchParams<{ signature: string }>();
@@ -61,6 +68,41 @@ export default function OrderDetailScreen() {
     }
   };
 
+  const handleCancel = () => {
+    Alert.alert('Cancelar OS', 'Deseja realmente cancelar esta ordem de serviço?', [
+      { text: 'Não', style: 'cancel' },
+      { 
+        text: 'Sim, Cancelar', 
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await cancelOrder();
+            router.back();
+          } catch (error: any) {
+            Alert.alert('Erro', error.message);
+          }
+        }
+      },
+    ]);
+  };
+
+  const handleSaveComment = async () => {
+    try {
+      await submitComment();
+      Alert.alert('Sucesso', 'Comentário salvo com sucesso!');
+    } catch (error: any) {
+      Alert.alert('Erro', error.message);
+    }
+  };
+
+  const handleStart = async () => {
+    try {
+      await startOrder();
+    } catch (error: any) {
+      Alert.alert('Aviso', error.message);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -80,7 +122,7 @@ export default function OrderDetailScreen() {
     );
   }
 
-  const isCompleted = order.status === 'completed';
+
 
   return (
     <View style={styles.screen}>
@@ -141,7 +183,38 @@ export default function OrderDetailScreen() {
           </View>
         </View>
 
-        {!isCompleted && (
+        {!isBlocked && order.status === 'pending' && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Comentário do Técnico</Text>
+            <View style={styles.commentBox}>
+              <TextInput
+                style={styles.commentInput}
+                placeholder="Insira um comentário (ex: motivo de não atendimento)"
+                multiline
+                value={technicianComment}
+                onChangeText={setTechnicianComment}
+              />
+              <TouchableOpacity style={styles.saveCommentButton} onPress={handleSaveComment}>
+                <Text style={styles.saveCommentText}>Salvar Comentário</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {!isBlocked && order.status === 'pending' && (
+          <View style={styles.footer}>
+            <GradientButton
+              text="Iniciar Atendimento"
+              gradient="main"
+              onPress={handleStart}
+            />
+            <TouchableOpacity style={styles.cancelLink} onPress={handleCancel}>
+              <Text style={styles.cancelLinkText}>Cancelar Ordem de Serviço</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {!isBlocked && order.status === 'in_progress' && (
           <>
             {/* Photos */}
             <PhotoPicker
@@ -164,7 +237,7 @@ export default function OrderDetailScreen() {
               onClear={() => setSignature('')}
             />
 
-            {/* Finalize Button */}
+            {/* Actions */}
             <View style={styles.footer}>
               <GradientButton
                 text="Finalizar Ordem"
@@ -173,6 +246,10 @@ export default function OrderDetailScreen() {
                 onPress={handleFinalize}
                 disabled={photos.length === 0 || !signature}
               />
+              <TouchableOpacity style={styles.cancelLink} onPress={handleCancel}>
+                <Text style={styles.cancelLinkText}>Cancelar Ordem de Serviço</Text>
+              </TouchableOpacity>
+              
               {(photos.length === 0 || !signature) && (
                 <Text style={styles.helperText}>
                   Anexe fotos e colete a assinatura para finalizar
@@ -182,13 +259,27 @@ export default function OrderDetailScreen() {
           </>
         )}
 
-        {isCompleted && (
+        {isBlocked && (
           <View style={styles.completedBox}>
-            <Feather name="check-circle" size={48} color={Colors.sucess} />
-            <Text style={styles.completedTitle}>OS Finalizada</Text>
-            <Text style={styles.completedDate}>
-              Finalizada em {new Date(order.finishedAt!).toLocaleDateString('pt-BR')} às {new Date(order.finishedAt!).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+            <Feather 
+              name={order.status === 'completed' ? "check-circle" : "x-circle"} 
+              size={48} 
+              color={order.status === 'completed' ? Colors.success : Colors.error} 
+            />
+            <Text style={styles.completedTitle}>
+              OS {order.status === 'completed' ? 'Finalizada' : 'Cancelada'}
             </Text>
+            {order.finishedAt && (
+              <Text style={styles.completedDate}>
+                Em {new Date(order.finishedAt!).toLocaleDateString('pt-BR')} às {new Date(order.finishedAt!).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+              </Text>
+            )}
+            {order.technicianComment && (
+              <View style={styles.commentPreview}>
+                <Text style={styles.commentPreviewLabel}>Comentário:</Text>
+                <Text style={styles.commentPreviewText}>{order.technicianComment}</Text>
+              </View>
+            )}
           </View>
         )}
       </ScrollView>
@@ -354,5 +445,59 @@ const styles = StyleSheet.create({
   completedDate: {
     fontSize: 14,
     color: Colors.textSecondary,
+  },
+  commentBox: {
+    backgroundColor: '#FFF',
+    marginHorizontal: 16,
+    borderRadius: 16,
+    padding: 16,
+    gap: 12,
+  },
+  commentInput: {
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 12,
+    height: 100,
+    textAlignVertical: 'top',
+    fontSize: 14,
+    color: Colors.text,
+  },
+  saveCommentButton: {
+    backgroundColor: Colors.secondary,
+    padding: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  saveCommentText: {
+    color: '#FFF',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  cancelLink: {
+    marginTop: 8,
+    padding: 12,
+  },
+  cancelLinkText: {
+    color: Colors.error,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  commentPreview: {
+    marginTop: 16,
+    backgroundColor: '#F9FAFB',
+    padding: 16,
+    borderRadius: 12,
+    width: '100%',
+  },
+  commentPreviewLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: Colors.textSecondary,
+    marginBottom: 4,
+  },
+  commentPreviewText: {
+    fontSize: 14,
+    color: Colors.text,
+    fontStyle: 'italic',
   },
 });

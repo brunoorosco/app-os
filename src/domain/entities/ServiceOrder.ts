@@ -1,4 +1,4 @@
-export type OrderStatus = 'pending' | 'in_progress' | 'completed';
+export type OrderStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
 export type OrderPriority = 'low' | 'medium' | 'high';
 
 export interface Address {
@@ -35,4 +35,8 @@ export interface ServiceOrder {
   materials?: Material[];
   signature?: string;
   finishedAt?: string;
+  // Internal tracking
+  technicianComment?: string;
+  startTime?: string;
+  endTime?: string;
 }

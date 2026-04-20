@@ -123,7 +123,7 @@ function ListHeader({
       <View style={styles.sectionTitleRow}>
         <Text style={styles.sectionTitle}>Ordens do dia</Text>
         <Feather name="navigation" size={14} color={Colors.textSecondary} />
-        <Text style={styles.sectionSubtitle}>Ordenado por proximidade</Text>
+        <Text style={styles.sectionSubtitle}>Ordenado por prioridade e distância</Text>
       </View>
     </View>
   );

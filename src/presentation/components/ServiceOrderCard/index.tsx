@@ -94,6 +94,15 @@ export function ServiceOrderCard({ order, onPress }: ServiceOrderCardProps) {
       <Text style={styles.description} numberOfLines={2}>
         {order.description}
       </Text>
+
+      {order.technicianComment && (
+        <View style={styles.commentBadge}>
+          <Feather name="message-square" size={12} color={Colors.textSecondary} />
+          <Text style={styles.commentBadgeText} numberOfLines={1}>
+            {order.technicianComment}
+          </Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
@@ -176,5 +185,21 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.textSecondary,
     lineHeight: 18,
+  },
+  commentBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginTop: 4,
+  },
+  commentBadgeText: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontStyle: 'italic',
+    flex: 1,
   },
 });

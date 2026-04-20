@@ -6,7 +6,7 @@ export const Colors = {
   detail: '#ffc300',
   background: '#F0F0F0',
   cardBackground: '#FFFFFF',
-  sucess: '#28A745',
+  success: '#28A745',
   error: '#FF2C2C',
   textButton: '#FFFFFF',
 
