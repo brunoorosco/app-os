@@ -56,12 +56,12 @@ export function ServiceOrderCard({ order, onPress }: ServiceOrderCardProps) {
       {/* Address */}
       <View style={styles.infoRow}>
         <Feather name="map-pin" size={14} color={Colors.textSecondary} />
-        <Text style={styles.infoText} numberOfLines={1}>
+        <Text style={styles.addressText} numberOfLines={1}>
           {order.address.street}, {order.address.number} — {order.address.neighborhood}
         </Text>
       </View>
 
-      {/* Schedule + Distance */}
+      {/* Schedule + Distance grouped */}
       <View style={styles.bottomRow}>
         <View style={styles.infoRow}>
           <Feather name="clock" size={14} color={Colors.textSecondary} />
@@ -69,10 +69,13 @@ export function ServiceOrderCard({ order, onPress }: ServiceOrderCardProps) {
         </View>
 
         {order.distance !== undefined && (
-          <View style={styles.distanceBadge}>
-            <Feather name="navigation" size={12} color={Colors.main} />
-            <Text style={styles.distanceText}>{formatDistance(order.distance)}</Text>
-          </View>
+          <>
+            <View style={styles.dotSeparator} />
+            <View style={styles.infoRow}>
+              <Feather name="navigation" size={14} color={Colors.textSecondary} />
+              <Text style={styles.infoText}>{formatDistance(order.distance)}</Text>
+            </View>
+          </>
         )}
       </View>
 
@@ -138,26 +141,25 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 13,
     color: Colors.textSecondary,
+    fontFamily: FontFamily.inter.regular,
+  },
+  addressText: {
+    fontSize: 13,
+    color: Colors.textSecondary,
     flex: 1,
+    fontFamily: FontFamily.inter.regular,
+  },
+  dotSeparator: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#D1D5DB',
+    marginHorizontal: 4,
   },
   bottomRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  distanceBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#FFF7ED',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  distanceText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: Colors.main,
+    gap: 8,
   },
   description: {
     fontSize: 13,

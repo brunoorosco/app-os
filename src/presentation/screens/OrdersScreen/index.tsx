@@ -13,8 +13,10 @@ import {
   ActivityIndicator,
   StyleSheet,
   StatusBar,
+  TouchableOpacity,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 
 export default function OrdersScreen() {
   const { orders, loading, refreshing, counters, technician, refresh } = useOrdersViewModel();
@@ -79,6 +81,7 @@ function ListHeader({
   technicianName: string;
   counters: OrderCounters;
 }) {
+  const router = useRouter();
   const firstName = technicianName.split(' ')[0];
 
   return (
@@ -97,11 +100,14 @@ function ListHeader({
             </Text>
             <Text style={styles.date}>{formatDateBR()}</Text>
           </View>
-          <View style={styles.avatarCircle}>
+          <TouchableOpacity
+            style={styles.avatarCircle}
+            onPress={() => router.push('/(app)/profile')}
+          >
             <Text style={styles.avatarText}>
               {firstName.charAt(0).toUpperCase()}
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </LinearGradient>
 
